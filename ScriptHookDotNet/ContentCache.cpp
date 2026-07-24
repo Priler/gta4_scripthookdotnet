@@ -69,29 +69,105 @@ namespace GTA {
 		RemoveNonExisting(CameraCache);
 		RemoveNonExisting(FireCache);
 	}
+	// IMPORTANT! use PeekExists(), never Exists(). Exists() latches bExists and raises
+	// CeasedToExist, so polling every cached object here would permanently kill wrappers that
+	// scripts are still using - the game briefly reports entities as non-existing while
+	// streaming, the player's ped included.
+	// 
+	// Sweeping must observe, never mutate.
+
 	generic <class T> where T: base::Object
 	void ContentCache::RemoveNonExisting(List<T>^ list) {
-		for (int i = list->Count-1; i >= 0; i--) {
-			if (!list[i]->Exists()) {
-				list->RemoveAt(i);
-				VLOG( "Non-existing " + list[i]->GetType()->Name + " " + list[i]->UID.ToString() + " removed!" );
-			}
+		if (list->Count == 0) return;
+		array<T>^ snapshot = list->ToArray();
+		for (int i = 0; i < snapshot->Length; i++) {
+			T item = snapshot[i];
+			if (isNULL(item)) continue;
+			if (item->PeekExists()) continue;
+			// NOTE: read what we need BEFORE removing - the original code logged
+			// list[i] after RemoveAt(i), which read the wrong element or threw
+			VLOG( "Dropping cached " + item->GetType()->Name + " " + item->UID.ToString() + " (gone from game)" );
+			list->Remove(item);
 		}
 	}
 	generic <class T> where T: base::Object
 	void ContentCache::RemoveNonExisting(Dictionary<int,T>^ list) {
-		for each (KeyValuePair<int,T> kvp in list) {
-			if (!kvp.Value->Exists()) {
-				DeleteCueue->Add(kvp.Key);
-				VLOG( "Non-existing " + kvp.Value->GetType()->Name + " " + kvp.Value->UID.ToString() + " removed!" );
-			}
+		if (list->Count == 0) return;
+		array<int>^ keys = gcnew array<int>(list->Count);
+		list->Keys->CopyTo(keys,0);
+
+		for (int i = 0; i < keys->Length; i++) {
+			T item;
+			if (!list->TryGetValue(keys[i], item)) continue; // already gone, e.g. removed by a handler
+			if (isNULL(item)) continue;
+			if (item->PeekExists()) continue;
+			DeleteCueue->Add(keys[i]);
+			VLOG( "Dropping cached " + item->GetType()->Name + " " + item->UID.ToString() + " (gone from game)" );
 		}
+
 		if (DeleteCueue->Count > 0) {
 			for (int i = 0; i < DeleteCueue->Count; i++) {
 				list->Remove(DeleteCueue[i]);
+				NoteDeadHandle(DeleteCueue[i]);
 			}
 			DeleteCueue->Clear();
 		}
+	}
+
+	void ContentCache::NoteDeadHandle(int Handle) {
+		if (DeadHandles->ContainsKey(Handle)) return; // keep the FIRST time it was seen dead
+		DeadHandles[Handle] = System::DateTime::Now;
+	}
+
+	bool ContentCache::TryParseMetaDataHandle(String^ Key, int% Handle) {
+		Handle = 0;
+		if (System::Object::ReferenceEquals(Key,nullptr)) return false;
+		int sep = Key->IndexOf('#');
+		if (sep <= 0) return false;
+		return System::Int32::TryParse(Key->Substring(0,sep), Handle);
+	}
+
+	bool ContentCache::isMetaDataExpired(int Handle) {
+		System::DateTime died;
+		if (!DeadHandles->TryGetValue(Handle, died)) return false; // still alive as far as we know
+		return ((System::DateTime::Now - died).TotalMilliseconds > METADATA_GRACE_MS);
+	}
+
+	void ContentCache::PruneMetaData() {
+		if (metadata->Count == 0) return;
+		List<String^>^ expired = gcnew List<String^>();
+		for each (KeyValuePair<String^,System::Object^> kvp in metadata) {
+			int handle = 0;
+			if (!TryParseMetaDataHandle(kvp.Key, handle)) continue;
+			if (isMetaDataExpired(handle)) expired->Add(kvp.Key);
+		}
+		for (int i = 0; i < expired->Count; i++) {
+			metadata->Remove(expired[i]);
+		}
+		if (expired->Count > 0) VLOG( "Dropped " + expired->Count.ToString() + " expired global metadata entries." );
+	}
+
+	void ContentCache::PurgeDeadHandles() {
+		if (DeadHandles->Count == 0) return;
+		System::DateTime now = System::DateTime::Now;
+		List<int>^ expired = gcnew List<int>();
+		for each (KeyValuePair<int,System::DateTime> kvp in DeadHandles) {
+			if ((now - kvp.Value).TotalMilliseconds > DEADHANDLE_KEEP_MS) expired->Add(kvp.Key);
+		}
+		for (int i = 0; i < expired->Count; i++) {
+			DeadHandles->Remove(expired[i]);
+		}
+	}
+
+	bool ContentCache::Sweep() {
+		System::DateTime now = System::DateTime::Now;
+		if (now < NextSweep) return false;
+		NextSweep = now + System::TimeSpan(0,0,0,0,SWEEP_INTERVAL_MS);
+
+		RemoveNonExisting();
+		PruneMetaData();
+		PurgeDeadHandles();
+		return true;
 	}
 
 	// PLAYER

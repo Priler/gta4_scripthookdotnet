@@ -24,6 +24,7 @@
 
 #include "Script.h"
 
+#include "ContentCache.h"
 #include "Game.h"
 #include "RemoteScriptDomain.h"
 #include "NetThread.h"
@@ -309,6 +310,20 @@ namespace GTA{
 				phonenumberlist[i].Delegate->Invoke();
 				return;
 			}
+		}
+	}
+
+	void Script::PruneMetaData() {
+		if isNULL(metadata) return;
+		if (metadata->Count == 0) return;
+		List<String^>^ expired = gcnew List<String^>();
+		for each (KeyValuePair<String^,System::Object^> kvp in metadata) {
+			int handle = 0;
+			if (!ContentCache::TryParseMetaDataHandle(kvp.Key, handle)) continue;
+			if (ContentCache::isMetaDataExpired(handle)) expired->Add(kvp.Key);
+		}
+		for (int i = 0; i < expired->Count; i++) {
+			metadata->Remove(expired[i]);
 		}
 	}
 

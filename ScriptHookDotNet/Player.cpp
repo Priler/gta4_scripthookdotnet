@@ -56,7 +56,7 @@ namespace GTA{
 		return Scripting::ConvertIntToPlayerIndex(pID);
 	}
 	int Player::PedHandle::get(){
-		int c;
+		int c = 0;
 		Scripting::GetPlayerChar(Index,&c);
 		return c;
 	}
@@ -76,7 +76,7 @@ namespace GTA{
 	}
 
 	GTA::Group^ Player::Group::get(){
-		int c;
+		int c = 0;
 		Scripting::GetPlayerGroup(Index,&c);
 		if (c == 0) return nullptr;
 
@@ -169,7 +169,7 @@ namespace GTA{
 		//	if (!Scripting::IsWantedLevelGreater(idx, i)) return i;
 		//}
 		//return 6;
-		i32 wl;
+		i32 wl = 0;
 		Scripting::StoreWantedLevel(Index, &wl);
 		return wl;
 	}
@@ -183,13 +183,13 @@ namespace GTA{
 	}
 
 	int Player::Money::get() {
-		i32 s;
+		i32 s = 0;
 		Scripting::StoreScore(Index, &s);
 		return s;
 	}
 	void Player::Money::set(int value) {
 		i32 idx = Index;
-		i32 s;
+		i32 s = 0;
 		Scripting::StoreScore(idx, &s);
 		if (value < 0) value = 0;
 		Scripting::AddScore(idx,value-s);
@@ -215,7 +215,7 @@ namespace GTA{
 			throw gcnew InvalidOperationException("Player.LastVehicle can only be used on the local player!");
 			return nullptr;
 		}
-		int car;
+		int car = 0;
 		Scripting::GetPlayersLastCarNoSave(&car);
 		if (car == 0) return nullptr;
 		return ContentCache::GetVehicle(car);

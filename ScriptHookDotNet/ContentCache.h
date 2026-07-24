@@ -49,6 +49,27 @@ namespace GTA{
 		static List<int>^ DeleteCueue = gcnew List<int>();
 		static Dictionary<String^,System::Object^>^ metadata = gcnew Dictionary<String^,System::Object^>();
 
+		// How often the caches are swept for entities that no longer exist in game
+		// Sweeping costs one Exists() check per cached item, so it is not done per frame
+		static const int SWEEP_INTERVAL_MS = 5000;
+
+		// Metadata of a vanished entity is kept around for this long before being dropped,
+		// so that scripts reacting to something's death can still read what they stored on it
+		static const int METADATA_GRACE_MS = 60000;
+
+		// Handles are forgotten entirely after this long
+		// Must be comfortably longer than the grace period, otherwise metadata
+		// could be orphaned instead of collected
+		static const int DEADHANDLE_KEEP_MS = 240000;
+
+		// Handle -> the time it was first seen to no longer exist in game
+		static Dictionary<int,System::DateTime>^ DeadHandles = gcnew Dictionary<int,System::DateTime>();
+		static System::DateTime NextSweep = System::DateTime::MinValue;
+
+		static void NoteDeadHandle(int Handle);
+		static void PruneMetaData();
+		static void PurgeDeadHandles();
+
 		static void DeleteStuff();
 
 		generic <class T> where T: base::Object
@@ -60,6 +81,23 @@ namespace GTA{
 
 		static void RemoveNonExisting();
 		static void RemoveAll(bool DeleteStuff);
+
+		/// <summary>
+		/// Drops cached wrappers for entities that no longer exist in game, and eventually
+		/// their metadata. Rate limited internally.
+		/// </summary>
+		static bool Sweep();
+
+		/// <summary>
+		/// Whether metadata stored against this handle is past its grace period and may be
+		/// dropped.
+		/// </summary>
+		static bool isMetaDataExpired(int Handle);
+
+		/// <summary>
+		/// Splits a "handle#name" metadata key. Returns false if the key is not in that form.
+		/// </summary>
+		static bool TryParseMetaDataHandle(String^ Key, [Out] int% Handle);
 		
 		static void AddPlayer(GTA::Player^ p);
 		static GTA::Player^ GetPlayer(int ID);

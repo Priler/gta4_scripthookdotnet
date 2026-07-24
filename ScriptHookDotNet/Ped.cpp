@@ -126,7 +126,7 @@ namespace GTA{
 
 	float Ped::Heading::get(){
 		NON_EXISTING_CHECK(0.0f);
-		f32 val;
+		f32 val = 0.0f;
 		Scripting::GetCharHeading(pHandle,&val);
 		return val;
 	}
@@ -173,7 +173,7 @@ namespace GTA{
 
 	int Ped::Health::get(){
 		NON_EXISTING_CHECK(-100);
-		i32 val;
+		i32 val = 0;
 		unmanaged::Native::GetCharHealth(pHandle,&val);
 		return val-100;
 	}
@@ -189,7 +189,7 @@ namespace GTA{
 
 	int Ped::Armor::get(){
 		NON_EXISTING_CHECK(0);
-		i32 val;
+		i32 val = 0;
 		Scripting::GetCharArmour(pHandle,&val);
 		return val;
 	}
@@ -374,7 +374,7 @@ namespace GTA{
 
 	GTA::Vehicle^ Ped::CurrentVehicle::get(){
 		NON_EXISTING_CHECK(nullptr);
-		int car;
+		int car = 0;
 		Scripting::GetCarCharIsUsing(pHandle, &car);
 		if (car == 0) return nullptr;
 		return ContentCache::GetVehicle(car);

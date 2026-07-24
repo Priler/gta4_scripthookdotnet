@@ -122,12 +122,12 @@ namespace GTA {
 	}
 
 	int Game::GameTime::get() {
-		u32 g;
+		u32 g = 0;
 		Scripting::GetGameTimer(&g);
 		return g;
 	}
 	float Game::LastFrameTime::get() {
-		f32 f;
+		f32 f = 0.0f;
 		Scripting::GetFrameTime(&f);
 		return f;
 	}
@@ -138,12 +138,12 @@ namespace GTA {
 	
 
 	GTA::Camera^ Game::DefaultCamera::get() {
-		i32 cam;
+		i32 cam = 0;
 		Scripting::GetGameCamChild(&cam);
 		return ContentCache::GetCamera(cam, false);
 	}
 	GTA::Camera^ Game::CurrentCamera::get() {
-		i32 cam;
+		i32 cam = 0;
 		Scripting::GetRootCam(&cam);
 		return ContentCache::GetCamera(cam, false);
 	}

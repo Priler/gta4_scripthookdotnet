@@ -38,7 +38,7 @@ namespace GTA{
 	}
 	Camera::Camera()
 		:HandleObject(0) {
-		u32 c;
+		u32 c = 0;
 		unmanaged::Native::CreateCam(14,&c);
 		pHandle = c;
 		ContentCache::AddCamera(this, true);
@@ -99,7 +99,7 @@ namespace GTA{
 
 	float Camera::FOV::get(){
 		NON_EXISTING_CHECK(0.0f);
-		float fov;
+		float fov = 0.0f;
 		Scripting::GetCamFov(pHandle,&fov);
 		return fov;
 	}

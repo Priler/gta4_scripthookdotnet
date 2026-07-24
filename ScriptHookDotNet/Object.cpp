@@ -99,7 +99,7 @@ namespace GTA {
 
 	float GTA::Object::Heading::get(){
 		NON_EXISTING_CHECK(0.0f);
-		f32 val;
+		f32 val = 0.0f;
 		Scripting::GetObjectHeading(pHandle,&val);
 		return val;
 	}

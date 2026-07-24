@@ -270,40 +270,40 @@ namespace GTA{
 
 	Blip^ Blip::AddBlip(GTA::Pickup^ Target) {
 		OBJECT_NON_EXISTING_CHECK(Target, nullptr);
-		int b;
+		int b = 0;
 		unmanaged::Native::AddBlipForPickup(Target->Handle,&b);
 		if (b == 0) return nullptr;
 		return ContentCache::GetBlip(b, true);
 	}
 	Blip^ Blip::AddBlip(GTA::Object^ Target) {
 		OBJECT_NON_EXISTING_CHECK(Target, nullptr);
-		int b;
+		int b = 0;
 		unmanaged::Native::AddBlipForObject(Target->Handle,&b);
 		if (b == 0) return nullptr;
 		return ContentCache::GetBlip(b, true);
 	}
 	Blip^ Blip::AddBlip(GTA::Vector3 Target) {
-		int b;
+		int b = 0;
 		unmanaged::Native::AddBlipForCoord(Target.X,Target.Y,Target.Z,&b);
 		if (b == 0) return nullptr;
 		return ContentCache::GetBlip(b, true);
 	}
 	Blip^ Blip::AddBlip(GTA::Vehicle^ Target) {
 		OBJECT_NON_EXISTING_CHECK(Target, nullptr);
-		int b;
+		int b = 0;
 		unmanaged::Native::AddBlipForCar(Target->Handle,&b);
 		if (b == 0) return nullptr;
 		return ContentCache::GetBlip(b, true);
 	}
 	Blip^ Blip::AddBlip(GTA::Ped^ Target) {
 		OBJECT_NON_EXISTING_CHECK(Target, nullptr);
-		int b;
+		int b = 0;
 		unmanaged::Native::AddBlipForChar(Target->Handle,&b);
 		if (b == 0) return nullptr;
 		return ContentCache::GetBlip(b, true);
 	}
 	Blip^ Blip::AddBlipContact(GTA::Vector3 Target) {
-		int b;
+		int b = 0;
 		unmanaged::Native::AddBlipForContact(Target.X,Target.Y,Target.Z,&b);
 		if (b == 0) return nullptr;
 		return ContentCache::GetBlip(b, true);

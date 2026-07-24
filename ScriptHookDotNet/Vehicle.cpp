@@ -65,7 +65,7 @@ namespace GTA{
 
 	float Vehicle::Heading::get(){
 		NON_EXISTING_CHECK(0.0f);
-		f32 val;
+		f32 val = 0.0f;
 		Scripting::GetCarHeading(pHandle,&val);
 		return val;
 	}
@@ -134,7 +134,7 @@ namespace GTA{
 
 	float Vehicle::Dirtyness::get(){
 		NON_EXISTING_CHECK(0.0f);
-		f32 res;
+		f32 res = 0.0f;
 		Scripting::GetVehicleDirtLevel(pHandle,&res);
 		return res;
 	}
@@ -188,7 +188,7 @@ namespace GTA{
 
 	int Vehicle::Health::get(){
 		NON_EXISTING_CHECK(0);
-		u32 val;
+		u32 val = 0;
 		unmanaged::Native::GetCarHealth(pHandle,&val);
 		return val;
 	}
@@ -279,7 +279,7 @@ namespace GTA{
 
 	String^ Vehicle::Name::get(){
 		NON_EXISTING_CHECK(String::Empty);
-		int model;
+		int model = 0;
 		unmanaged::Native::GetCarModel(pHandle, &model);
 		return gcnew String(Scripting::GetDisplayNameFromVehicleModel((Scripting::eModel)model));
 	}
@@ -291,7 +291,7 @@ namespace GTA{
 
 	int Vehicle::PassengerSeats::get(){
 		NON_EXISTING_CHECK(0);
-		u32 val;
+		u32 val = 0;
 		Scripting::GetMaximumNumberOfPassengers(pHandle,&val);
 		return val;
 	}
@@ -326,7 +326,7 @@ namespace GTA{
 
 	float Vehicle::Speed::get(){
 		NON_EXISTING_CHECK(0.0f);
-		float s;
+		float s = 0.0f;
 		unmanaged::Native::GetCarSpeed(pHandle,&s);
 		return s;
 	}
@@ -455,7 +455,7 @@ namespace GTA{
 		//if (Seat == VehicleSeat::AnyPassengerSeat) Seat = GetFreeSeat(); // AnyPassengerSeat WORKS
 		if (Seat <= VehicleSeat::None) return nullptr;
 		if (!isSeatFree(Seat)) return nullptr;
-		int ped;
+		int ped = 0;
 		if (Seat == VehicleSeat::Driver)
 			unmanaged::Native::CreateRandomCharAsDriver(pHandle,&ped);
 		else
@@ -469,7 +469,7 @@ namespace GTA{
 		if (Seat <= VehicleSeat::None) return nullptr;
 		if (!isSeatFree(Seat)) return nullptr;
 		model.LoadToMemoryNow();
-		int ped;
+		int ped = 0;
 		if (Seat == VehicleSeat::Driver)
 			unmanaged::Native::CreateCharInsideCar(pHandle,(Scripting::ePedType)Type,(Scripting::eModel)model.Hash,&ped);
 		else
@@ -520,7 +520,7 @@ namespace GTA{
 			}
 			return false;
 		} else if (Seat == VehicleSeat::Driver) {
-			int ped;
+			int ped = 0;
 			unmanaged::Native::GetDriverOfCar(pHandle,&ped);
 			return (ped == 0);
 		} else {

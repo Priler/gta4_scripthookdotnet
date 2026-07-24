@@ -247,7 +247,7 @@ namespace GTA{
 	}
 
 	Model Model::GetWeaponModel(GTA::Weapon weapon) {
-		i32 val;
+		i32 val = 0;
 		Scripting::GetWeaponTypeModel((i32)weapon, &val);
 		return Model( (int)val );
 	}

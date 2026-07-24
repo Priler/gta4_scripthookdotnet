@@ -320,13 +320,18 @@ namespace GTA {
 
 		//DoGC("AbortScripts call");
 		if (scriptList->Count > 0) {
-			for(int i=scriptList->Count-1; i>=0; i--){
+			// Abort() ends the script's thread, which calls back into RemoveRunningScript and
+			// removes it from scriptList
+			array<GTA::Script^>^ snapshot = scriptList->ToArray();
+			for(int i=snapshot->Length-1; i>=0; i--){
+				GTA::Script^ script = snapshot[i];
+				if isNULL(script) continue;
 				try {
 
-					scriptList->default[i]->Abort();
+					script->Abort();
 					//DoGC("abort of script " + i.ToString());
 
-				} catchScriptErrors (scriptList->default[i], "finalization",)
+				} catchScriptErrors (script, "finalization",)
 			}
 			//scriptList->Clear();
 			//DoGC("scriptList->Clear()");
@@ -507,6 +512,17 @@ namespace GTA {
 
 	void RemoteScriptDomain::InitFrame() {
 		FrameNum++;
+
+		// Drop cached wrappers of entities the game has despawned, and time out the metadata
+		// that was stored against them.
+		// Rate limited inside Sweep(), so its cheap per frame.
+		try {
+			if (ContentCache::Sweep()) {
+				for (int i = 0; i < scriptList->Count; i++) {
+					if isNotNULL(scriptList[i]) scriptList[i]->PruneMetaData();
+				}
+			}
+		} catchErrors("Error during cache sweep",)
 	}
 
 	String^ RemoteScriptDomain::CurrentScriptName::get() {

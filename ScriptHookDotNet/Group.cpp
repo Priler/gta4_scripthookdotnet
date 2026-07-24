@@ -40,7 +40,7 @@ namespace GTA{
 	}
 	Group::Group(Ped^ Leader)
 		: HandleObject(0) {
-		int g;
+		int g = 0;
 		Scripting::CreateGroup(false,&g,true);
 		pHandle = g;
 		this->Leader = Leader;
@@ -60,7 +60,7 @@ namespace GTA{
 
 	Ped^ Group::Leader::get(){
 		NON_EXISTING_CHECK(nullptr);
-		int p;
+		int p = 0;
 		Scripting::GetGroupLeader(pHandle,&p);
 		if (p == 0) return nullptr;
 		return ContentCache::GetPed(p);
@@ -112,7 +112,7 @@ namespace GTA{
 		NON_EXISTING_CHECK(nullptr);
 		//u32 i,c;
 		//Scripting::GetGroupSize(pHandle,&i,&c);
-		int p;
+		int p = 0;
 		Scripting::GetGroupMember(pHandle,Index,&p);
 		if (p == 0) return nullptr;
 		return ContentCache::GetPed(p);
@@ -131,7 +131,7 @@ namespace GTA{
 	}
 	void Group::RemoveMember(int Index) {
 		NON_EXISTING_CHECK();
-		int p;
+		int p = 0;
 		Scripting::GetGroupMember(pHandle,Index,&p);
 		if (p != 0) Scripting::RemoveCharFromGroup(p);
 		ForceNextExistsCheck();

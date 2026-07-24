@@ -523,7 +523,7 @@ namespace GTA{
 	}
 
 	Ped^ World::CreatePed(Vector3 Position, GTA::Gender Gender) {
-		int ped;
+		int ped = 0;
 		if (Gender == GTA::Gender::Male) {
 			unmanaged::Native::CreateRandomMaleChar(Position.X,Position.Y,Position.Z,&ped);
 		} else {
@@ -535,7 +535,7 @@ namespace GTA{
 		return res;
 	}
 	Ped^ World::CreatePed(Vector3 Position) {
-		int ped;
+		int ped = 0;
 		unmanaged::Native::CreateRandomChar(Position.X,Position.Y,Position.Z,&ped);
 		if (ped == 0) return nullptr;
 		Ped^ res = ContentCache::GetPed(ped);
@@ -562,7 +562,7 @@ namespace GTA{
 
 	Vehicle^ World::CreateVehicle(Vector3 Position) {
 		int car;
-		u32 model;
+		u32 model = 0;
 		Scripting::ScriptAny unknown;
 		Scripting::GetRandomCarModelInMemory(true,&model,&unknown);
 		unmanaged::Native::CreateCar(model,Position.X,Position.Y,Position.Z,&car,true);
@@ -573,7 +573,7 @@ namespace GTA{
 	Vehicle^ World::CreateVehicle(GTA::Model Model, Vector3 Position) {
 		if (!Model.isVehicle) return nullptr;
 		if (!Model.LoadToMemoryNow()) return nullptr;
-		int car;
+		int car = 0;
 		unmanaged::Native::CreateCar(Model.Handle,Position.X,Position.Y,Position.Z,&car,true);
 		Model.AllowDisposeFromMemory();
 		if (car == 0) return nullptr;
@@ -582,7 +582,7 @@ namespace GTA{
 	Vehicle^ World::CreateMissionTrain(Vector3 Position) {
 		GTA::Model Model = GTA::Model(0x2FBC4D30);
 		if (!Model.LoadToMemoryNow()) return nullptr;
-		int car;
+		int car = 0;
 		unmanaged::Native::CreateMissionTrain(0,Position.X,Position.Y,Position.Z,true,&car);
 		Model.AllowDisposeFromMemory();
 		if (car == 0) return nullptr;
@@ -592,7 +592,7 @@ namespace GTA{
 	GTA::Object^ World::CreateObject(GTA::Model Model, Vector3 Position) {
 		if (!Model.LoadToMemoryNow()) return nullptr;
 		//Model.LoadCollisionDataToMemoryNow();
-		int obj;
+		int obj = 0;
 		unmanaged::Native::CreateObject((Scripting::eModel)Model.Hash,Position.X,Position.Y,Position.Z,&obj,true);
 		Model.AllowDisposeFromMemory();
 		if (obj == 0) return nullptr;

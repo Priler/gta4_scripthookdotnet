@@ -48,7 +48,7 @@ namespace value {
 
 	float VehicleDoor::Angle::get() {
 		OBJECT_NON_EXISTING_CHECK(vehicle,0.0f);
-		f32 a;
+		f32 a = 0.0f;
 		Scripting::GetDoorAngleRatio(vehicle->Handle, (Scripting::eVehicleDoor)door, &a);
 		return a;
 	}

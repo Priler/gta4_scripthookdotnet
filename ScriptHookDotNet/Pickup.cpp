@@ -51,7 +51,7 @@ namespace GTA{
 	Room Pickup::CurrentRoom::get() {
 		NON_EXISTING_CHECK(Room(0,0));
 		//Scripting::eInterior ii;
-		u32 rk;
+		u32 rk = 0;
 		//Scripting::GetInteriorFromPickup(pHandle,&ii);
 		Scripting::GetRoomKeyFromPickup(pHandle,&rk);
 		return Room(force_cast<int>(rk),force_cast<int>(0));

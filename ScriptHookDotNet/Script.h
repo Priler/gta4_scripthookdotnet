@@ -122,6 +122,11 @@ namespace GTA{
 			return metadata->ContainsKey(id);
 		}
 
+		/// <summary>
+		/// Drops metadata belonging to entities that vanished from the game long enough ago
+		/// </summary>
+		void PruneMetaData();
+
 #ifdef DEBUG
 	public:
 #else
