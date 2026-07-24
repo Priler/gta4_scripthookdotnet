@@ -2,6 +2,8 @@
 
 by Hazard (hazard_x@gmx.net / twitter.com/HazardX)
 
+fork by Priler (with some edits taken from Tomasak's fork)
+
 based on and includes parts of the GTAIV C++ Script Hook
 from Aru <oneforaru at gmail dot com>
 
@@ -35,19 +37,37 @@ You can get Aru's C++ Script Hook here:
 http://www.gtaforums.com/index.php?showtopic=390582
 
 
-**Requirements**
+**Supported game versions**
 
-Required to compile the sourcecode are:
+- GTA IV: 1.0.1.0 up to 1.0.7.0
+- EFLC: 1.1.1.0 up to 1.1.2.0
+- GTA IV Complete Edition: 1.2.0.59
 
-- Microsoft Visual Studio 2010 (newer versions will probably work too)
-- Microsoft DirectX SDK March 2008
-- Microsoft Windows SDK (maybe? am not entirely sure...)
+Complete Edition additionally requires `aCompleteEditionHook.asi`
+(in `lib/CompleteEditionHook/`.
 
-IMPORTANT: After installing the DirectX SDK March 2008 you'll have to
-set up a system variable in windows named "DXSDK_2008-03" containing 
-the full path to the installation folder of the SDK. This is to allow 
-multiple versions of the SDK to be installed. Make sure to include a 
-final backslash ( \ ) at the end of the path.
+
+**Building**
+
+Required to compile the sourcecode:
+
+- Visual Studio 2022 with the workloads
+  "Desktop development with C++" and ".NET desktop development",
+  plus the individual component "C++/CLI support for v143 build tools"
+- Windows 10/11 SDK
+- .NET Framework 4.8 targeting pack
+
+Then just open `ScriptHookDotNet.sln` and build **Release | Win32**.
+
+The build produces `bin\ScriptHookDotNet.asi` (the plugin) along with
+`bin\ScriptHookDotNet.xml` (IntelliSense documentation for script authors).
+Run `_release\_copy.bat` afterwards to assemble a complete release package in `_release\archive`.
+
+No DirectX SDK installation is needed. The `d3dx9` headers and import
+library the project uses are checked into `ScriptHookDotNet/dxsdk/`, and
+the import library for Aru's Script Hook is checked in as
+`ScriptHookDotNet/ScriptHook.lib`. Older revisions of this project instead required the DirectX SDK March 2008 to be installed and a `DXSDK_2008-03` environment variable pointing at it.
+That is no longer the case.
 
 See the included ScriptHookDotNet.readme.txt on how to actually run 
 the Script Hook with the game.

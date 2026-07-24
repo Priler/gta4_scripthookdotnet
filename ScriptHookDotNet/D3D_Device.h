@@ -70,6 +70,10 @@ namespace GTA {
 		//static GTA::Direct3D9::Device^ pDevice;
 		static Direct3DHookNative* nativeHook = new Direct3DHookNative();
 		static IDirect3DDevice9* cDevice = NULL;
+		// Records exactly the device states we clobber while drawing, so they can be
+		// restored afterwards instead of leaking into the game's own rendering
+		// (Leaking ZENABLE/ALPHABLENDENABLE is what caused the rain rendering bug)
+		static IDirect3DStateBlock9* cStateBlock = NULL;
 		//static ID3DXSprite* sprite = NULL;
 		static bool bDrawing = false;
 		static bool bResettedOnce = false;

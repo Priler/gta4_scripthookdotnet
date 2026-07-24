@@ -124,6 +124,16 @@ namespace unmanaged {
 					ADDRESS_PEDPOOL				= BaseAddress + 0x18219EC;
 					ADDRESS_VEHICLEPOOL			= BaseAddress + 0x15C17B0;
 					break;
+				case GTA::GameVersion::v1259:
+					// Complete Edition.
+					// Verified against GTAIV.exe 1.2.0.59:
+					// BLIPLIST is a table base   -> mov eax,[eax*4+0x118F6F8]
+					// the three pools are single -> mov reg,[addr] pointer loads
+					ADDRESS_BLIPLIST			= BaseAddress + 0x118F6F8;
+					ADDRESS_OBJECTPOOL			= BaseAddress + 0x1632C60;
+					ADDRESS_PEDPOOL				= BaseAddress + 0x18B6F1C;
+					ADDRESS_VEHICLEPOOL			= BaseAddress + 0x12E22A4;
+					break;
 			}
 		}
 

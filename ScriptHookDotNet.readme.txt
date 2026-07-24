@@ -1,7 +1,8 @@
-GTAIV .Net Script Hook v1.7.1.7 BETA
+GTAIV .Net Script Hook v1.7.1.9 BETA
 (C) 2009 Hazard (hazard_x@gmx.net / twitter.com/HazardX)
 
 based on the GTAIV C++ Script Hook from Aru <oneforaru at gmail dot com>
+fork by Priler (with some edits taken from Tomasak's fork)
 
 Classes Vector2, Vector3, Vector4, Quaternion and Matrix based on
 sourcecode from SlimDX ( www.slimdx.org )
@@ -45,9 +46,12 @@ Required to run this plugin are:
  - A valid installation of GTA IV or EFLC patched to any of the following versions:
 	GTA IV: version 1.0.1.0 up to version 1.0.7.0
 	EFLC:   version 1.1.1.0 up to version 1.1.2.0
+	GTA IV Complete Edition: version 1.2.0.59
 
  - Microsoft .Net Framework 4 installed on your machine
  - Any AsiLoader installed for GTA IV
+
+ - ON COMPLETE EDITION ONLY: aCompleteEditionHook.asi (included).
 
 
 I've included download links below. If the application crashes or
@@ -93,6 +97,12 @@ one of the two files is newer and keep that.
 
 Only the ScriptHookDotNet.asi and ScriptHook.dll files are
 required to run scripts.
+
+On GTA IV Complete Edition (1.2.0.59) you additionally need
+aCompleteEditionHook.asi, which is included in this archive. Put
+it in the same folder as the other two files. Without it the game
+starts, but no Script Hook based mod loads at all. It is not needed
+on any other version of the game, where it does nothing.
 
 All files in the "scripts\for Developers" subfolder are only 
 required if you want to write own scripts. Look at the "Writing
@@ -160,6 +170,23 @@ game when ScriptHookDotNet.asi is deleted.
 
 8. Changelog
 ------------
+
+Version 1.7.1.9 BETA: (Priler's fork)
+- Reworked the rain fix a bit. 1.7.1.8 by Tomasak removed the Direct3D state setup
+  altogether, which left the Script Hook drawing with whatever states
+  the game happened to have set. The states are now set as before, but
+  saved beforehand and restored afterwards with a state block, so they
+  no longer leak into the game's own rendering
+- Moved project build to more actual Visual Studio (2022 / v143),
+  also without a machine-wide DirectX SDK installation and without the
+  DXSDK_2008-03 environment variable
+- aCompleteEditionHook.asi is now included in the release archive
+  for a proper full Complete Edition support
+- Fixed the release packaging script
+
+Version 1.7.1.8 BETA: (Tomasak's fork)
+- Added support for GTA IV Complete Edition (1.2.0.59)
+- First fix for the rain rendering bug, superseded in 1.7.1.9
 
 Version 1.7.1.7 BETA:
 - Fixed Blip.Delete always causing an exception.
@@ -351,8 +378,19 @@ work as desired or may even lead to crashes.
 10. Troubleshooting
 -------------------
 
-If you get a "MSVCR100.dll not found" error, install the Microsoft Visual C++ 2010 Redistributable Package (x86):
-http://www.microsoft.com/downloads/details.aspx?FamilyID=a7b7a05e-6de6-4d3a-a423-37bf0912db84
+If you get a "VCRUNTIME140.dll not found" or "MSVCP140.dll not found" error, install the
+Microsoft Visual C++ Redistributable for Visual Studio 2015-2022 (x86):
+https://aka.ms/vs/17/release/vc_redist.x86.exe
+
+(Builds of this Script Hook older than 1.7.1.9 were compiled with Visual Studio 2010 and
+asked for MSVCR100.dll instead, from the Visual C++ 2010 Redistributable Package (x86):
+http://www.microsoft.com/downloads/details.aspx?FamilyID=a7b7a05e-6de6-4d3a-a423-37bf0912db84 )
+
+If you get a "d3dx9_43.dll not found" error, install the DirectX End-User Runtime:
+https://www.microsoft.com/download/details.aspx?id=35
+
+On Complete Edition, if no script loads at all and no ScriptHookDotNet.log is created,
+check that aCompleteEditionHook.asi is present next to ScriptHook.dll.
 
 If you get crashes and are using GTA IV version 1.0.4.0 or older, try to install this
 older version of the C++ ScriptHook, which works fine with the current .Net ScriptHook:

@@ -131,6 +131,11 @@ namespace GTA {
 
 	void Direct3D::OnDeviceLost() {
 		if (cDevice == NULL) return;
+		// State blocks do not survive a device reset - drop it so OnRender rebuilds it
+		if (cStateBlock != NULL) {
+			cStateBlock->Release();
+			cStateBlock = NULL;
+		}
 		cDevice = NULL;
 		if (bResettedOnce) NetHook::Log("Direct3D device lost!");
 		ReleaseAll(false);
@@ -141,11 +146,32 @@ namespace GTA {
 		if (Scripting::IsPauseMenuActive() || Scripting::IsScreenFadingOut() || Scripting::IsScreenFadedOut()) return;
 		bDrawing = true;
 		try {
+			// Build the state block once per device. While recording, the Set* calls below
+			// do not touch the device - they only declare which states the block covers
+			if (cStateBlock == NULL) {
+				if (SUCCEEDED(cDevice->BeginStateBlock())) {
+					cDevice->SetTexture(0, NULL);
+					cDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+					cDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+					cDevice->SetFVF(D3DFVF_XYZ); // value irrelevant, DrawPolygons overwrites the FVF
+					// cStateBlock is a static field of a ref class, so &cStateBlock would be an
+					// interior_ptr - EndStateBlock needs a plain native pointer, hence the local
+					IDirect3DStateBlock9* block = NULL;
+					if (SUCCEEDED(cDevice->EndStateBlock(&block))) cStateBlock = block;
+				}
+			}
+
+			// Save the game's current values for those states ...
+			if (cStateBlock != NULL) cStateBlock->Capture();
+
 			cDevice->SetTexture(0, NULL);
 			cDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-			cDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE); 
-			
+			cDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+
 			NetHook::Draw();
+
+			// ... and put them back, so the game renders with the states it expects.
+			if (cStateBlock != NULL) cStateBlock->Apply();
 
 		} catchErrors("Error during Direct3D rendering",)
 		bDrawing = false;
