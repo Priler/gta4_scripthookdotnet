@@ -31,6 +31,41 @@
 namespace unmanaged {
 //namespace MemoryAccess {
 
+	// Signature and the meaning of the arguments come from IV-SDK .NET's CShadows.h
+	// (ClonkAndre / Zolika1351), which in turn credits zmenu for the flag values
+	typedef void (__cdecl *AddSceneLightFn)(
+		unsigned int, unsigned int, unsigned int,
+		float*, float*, float*, float*,
+		float, int, int, float, float, float, float, float,
+		int, unsigned int, unsigned int);
+
+	void MemoryAccess::AddSceneLight(
+		u32 LightType, u32 Flags,
+		float DirX, float DirY, float DirZ,
+		float TanDirX, float TanDirY, float TanDirZ,
+		float PosX, float PosY, float PosZ,
+		float ColR, float ColG, float ColB,
+		float Intensity, int TexHash, int TxdSlot, float Range,
+		float InnerConeAngle, float OuterConeAngle,
+		float VolIntensity, float VolSizeScale,
+		int InteriorId, u32 ID)
+	{
+		if (ADDRESS_ADDSCENELIGHT == 0) return;
+		try {
+			float dir[3]    = { DirX,    DirY,    DirZ    };
+			float tandir[3] = { TanDirX, TanDirY, TanDirZ };
+			float pos[3]    = { PosX,    PosY,    PosZ    };
+			float col[3]    = { ColR,    ColG,    ColB    };
+
+			AddSceneLightFn fn = (AddSceneLightFn)ADDRESS_ADDSCENELIGHT;
+			fn( 0, LightType, Flags, dir, tandir, pos, col,
+				Intensity, TexHash, TxdSlot, Range,
+				InnerConeAngle, OuterConeAngle, VolIntensity, VolSizeScale,
+				InteriorId, 0, ID );
+
+		} catchErrors ("Error in AddSceneLight", )
+	}
+
 	int MemoryAccess::GetGlobalAddress(int index) {
 		int res;
 		try {

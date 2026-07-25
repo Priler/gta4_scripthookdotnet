@@ -69,6 +69,8 @@ namespace Scripting {
 		if (fn != 0) {
 			NativeCall call = (NativeCall)fn;
 			call(cxt);
+		} else {
+			cxt->ClearResult();
 		}
 	}
 

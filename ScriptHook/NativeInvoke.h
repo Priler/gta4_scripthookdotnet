@@ -44,6 +44,12 @@ private:
 			NativeCall call = (NativeCall)fn;
 			call(cxt);
 		}
+		else
+		{
+			// Not every name in the IV SDK headers is in the retail native table.
+			// A skipped call must not leave the pushed arguments readable as a result.
+			cxt->ClearResult();
+		}
 	}
 
 public:

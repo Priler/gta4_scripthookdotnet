@@ -42,6 +42,9 @@ namespace unmanaged {
 		static u32 ADDRESS_OBJECTPOOL = 0;
 		static u32 ADDRESS_PEDPOOL = 0;
 		static u32 ADDRESS_VEHICLEPOOL = 0;
+		// CShadows::AddSceneLight
+		// @TODO: Left at 0 on every version whose address has not been verified against a real exe - callers must check hasSceneLights() first
+		static u32 ADDRESS_ADDSCENELIGHT = 0;
 		//static u32 ADDRESS_GETDIRECT3DDEVICE9 = 0; //GetDirect3DDevice9
 		//static u32 ADDRESS_GLOBALLIST = 0;
 		//static u32 ADDRESS_PHONENUMBER = 0;
@@ -129,13 +132,56 @@ namespace unmanaged {
 					// Verified against GTAIV.exe 1.2.0.59:
 					// BLIPLIST is a table base   -> mov eax,[eax*4+0x118F6F8]
 					// the three pools are single -> mov reg,[addr] pointer loads
+					//
+					// VEHICLEPOOL and BLIPLIST were independently confirmed against the
+					// auto-generated 12059.ini from https://github.com/Kev7cks/IV-SDK-DotNet
+					// That file stores the RVA of the 4-byte operand field of an instruction referencing the
+					// global, not the global itself, so its values need one extra step:
+					//
+					//   [CPools] ms_pVehiclePool = 0x5DC2E5 -> operand reads 0x012E22A4
+					//   [CRadar] RadarTrace      = 0x50429A -> operand reads 0x0118F6F8
+					//
+					// PEDPOOL and OBJECTPOOL cannot be cross-checked that way: the entries
+					// for them (0xEE24C, 0xA9D72) sit inside the encrypted part of .text
+					// (RVA 0x1000-0x101000, entropy 8.00), which only exists decrypted at
+					// runtime. Those two still rest on the xref scan of the exe alone.
 					ADDRESS_BLIPLIST			= BaseAddress + 0x118F6F8;
 					ADDRESS_OBJECTPOOL			= BaseAddress + 0x1632C60;
 					ADDRESS_PEDPOOL				= BaseAddress + 0x18B6F1C;
 					ADDRESS_VEHICLEPOOL			= BaseAddress + 0x12E22A4;
+
+					// CShadows::AddSceneLight. RVA 0x6BCCD0 from the same 12059.ini, checked
+					// directly in GTAIV.exe 1.2.0.59 - it lands on a real function prologue
+					// (55 8B EC 83 E4 F0 = push ebp / mov ebp,esp / and esp,~0xF), so unlike
+					// the data entries above this one needs no decoding.
+					// +0x400000 converts the RVA to the VA form the rest of this table uses.
+					// The equivalents for 1.0.7.0 (0x4C59F0) and 1.0.8.0 (0x62DF00) are known
+					// from IV-SDK .NET but have not been checked (@TODO).
+					ADDRESS_ADDSCENELIGHT		= BaseAddress + 0xABCCD0;
 					break;
 			}
 		}
+
+		/// <summary>
+		/// Whether this game version has a known CShadows::AddSceneLight address.
+		/// </summary>
+		static bool hasSceneLights() {
+			return (ADDRESS_ADDSCENELIGHT != 0);
+		}
+
+		/// <summary>
+		/// Queues one light into the scene light list for this frame.
+		/// </summary>
+		static void AddSceneLight(
+			u32 LightType, u32 Flags,
+			float DirX, float DirY, float DirZ,
+			float TanDirX, float TanDirY, float TanDirZ,
+			float PosX, float PosY, float PosZ,
+			float ColR, float ColG, float ColB,
+			float Intensity, int TexHash, int TxdSlot, float Range,
+			float InnerConeAngle, float OuterConeAngle,
+			float VolIntensity, float VolSizeScale,
+			int InteriorId, u32 ID);
 
 		static int GetGlobalAddress(int index);
 		static int GetGlobalInteger(int index);

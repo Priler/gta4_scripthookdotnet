@@ -67,6 +67,18 @@ public:
 		m_nArgCount++;
 	}
 
+	// Wipes the buffer GetResult reads from. Needed when a native could not be
+	// resolved and the call was skipped: the return slot aliases the argument slots,
+	// so the result would otherwise be the first argument that was pushed. Reading a
+	// handle back as a pointer is an access violation, not a bad value.
+	inline void ClearResult()
+	{
+		for (u32 i = 0; i < sizeof(m_TempStack); i++)
+		{
+			m_TempStack[i] = 0;
+		}
+	}
+
 	template <typename T>
 	inline T GetResult()
 	{

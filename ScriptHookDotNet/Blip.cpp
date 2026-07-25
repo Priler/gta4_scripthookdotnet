@@ -158,7 +158,9 @@ namespace GTA{
 
 	String^ Blip::Name::get(){
 		NON_EXISTING_CHECK(String::Empty);
-		return gcnew String(Scripting::GetBlipName(pHandle));
+		const char* name = Scripting::GetBlipName(pHandle);
+		if (name == NULL) return String::Empty;
+		return gcnew String(name);
 	}
 	void Blip::Name::set(String^ value){
 		NON_EXISTING_CHECK();

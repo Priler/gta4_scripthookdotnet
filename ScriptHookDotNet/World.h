@@ -51,6 +51,44 @@ namespace GTA{
 		/// <param name="Intensity">Light Intensity. 50 is a common value.</param>
 		static void DrawLight(Vector3 Position, Drawing::Color Color, float Range, float Intensity);
 
+		/// <summary>
+		/// Whether AddSceneLight is usable on the game version currently running.
+		/// Only Complete Edition (1.2.0.59) is currently supported
+		/// </summary>
+		static property bool SceneLightsAvailable {
+			bool get();
+		}
+
+		/// <summary>
+		/// Draws a 3D light like DrawLight, but through the engine's own scene light path,
+		/// which can additionally cast real shadows.
+		/// <para>Must be called once per frame for as long as the light should be visible,
+		/// from a script tick or a PerFrameScriptDrawing handler.</para>
+		/// </summary>
+		/// <param name="Intensity">Light Intensity. 50 is a common value.</param>
+		/// <param name="CastShadows">Whether the light casts shadows. Costs noticeably more.</param>
+		/// <param name="ID">
+		/// Identifier the shadow system uses to track this light between frames. It must stay
+		/// the same every frame for a given light and be unique among lights that cast
+		/// shadows. Ignored when CastShadows is false.
+		/// </param>
+		static void AddSceneLight(Vector3 Position, Drawing::Color Color, float Range, float Intensity, bool CastShadows, unsigned int ID);
+
+		/// <summary>
+		/// Full form of AddSceneLight, exposing every argument the engine function takes.
+		/// <para>Only Position, Color, Range, Intensity and the shadow bit in Flags are well
+		/// understood. The remaining arguments are passed straight through and are largely
+		/// undocumented, so treat them as experimental.</para>
+		/// </summary>
+		/// <param name="Flags">0x500 for a plain light, 0x504 to also cast shadows.</param>
+		static void AddSceneLight(Vector3 Position, Vector3 Direction, Vector3 TangentDirection,
+			Drawing::Color Color, float Range, float Intensity,
+			unsigned int LightType, unsigned int Flags,
+			int TextureHash, int TxdSlot,
+			float InnerConeAngle, float OuterConeAngle,
+			float VolumeIntensity, float VolumeSizeScale,
+			int InteriorID, unsigned int ID);
+
 		static array<int>^ World::GetValidPedHandles(GTA::Model Model);
 		static array<int>^ World::GetValidVehicleHandles(GTA::Model Model);
 		static array<int>^ World::GetValidObjectHandles(GTA::Model Model);

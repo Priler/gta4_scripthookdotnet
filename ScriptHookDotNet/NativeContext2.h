@@ -86,6 +86,14 @@ public:
 		ptrPos = 0;
 	}
 
+	// Reset deliberately leaves the return buffer alone, and this context is shared
+	// across every call, so a skipped call would hand back the previous call's result
+	void ClearResult() {
+		for (u32 i = 0; i < sizeof(m_TempStackReturn); i++) {
+			m_TempStackReturn[i] = 0;
+		}
+	}
+
 	int ArgCount() {
 		return m_nArgCount;
 	}

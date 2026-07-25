@@ -41,6 +41,11 @@ namespace GTA {
 	}
 
 	void Light::PerFrameDrawing(Object^ sender, EventArgs^ e) {
+		// Only take the scene light path when there is something to gain from it
+		if (bCastShadows && World::SceneLightsAvailable) {
+			World::AddSceneLight(pPosition, pColor, pRange, pIntensity, true, pLightID);
+			return;
+		}
 		World::DrawLight(pPosition, pColor, pRange, pIntensity);
 	}
 

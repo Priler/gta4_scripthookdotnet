@@ -38,6 +38,11 @@ namespace GTA {
 		float pRange;
 		float pIntensity;
 		Vector3 pPosition;
+		bool bCastShadows;
+
+		// The shadow system tracks a light across frames by this id
+		unsigned int pLightID;
+		static unsigned int NextLightID = 1;
 
 		void PerFrameDrawing(Object^ sender, EventArgs^ e);
 
@@ -51,6 +56,8 @@ namespace GTA {
 			pRange = Range;
 			pIntensity = Intensity;
 			pPosition = Position;
+			bCastShadows = false;
+			pLightID = NextLightID++;
 		}
 		Light(System::Drawing::Color Color, float Range, float Intensity) {
 			bEnabled = false;
@@ -58,6 +65,8 @@ namespace GTA {
 			pRange = Range;
 			pIntensity = Intensity;
 			pPosition = Vector3();
+			bCastShadows = false;
+			pLightID = NextLightID++;
 		}
 		Light() {
 			bEnabled = false;
@@ -65,6 +74,8 @@ namespace GTA {
 			pRange = 3.0F;
 			pIntensity = 50.0F;
 			pPosition = Vector3();
+			bCastShadows = false;
+			pLightID = NextLightID++;
 		}
 
 		property bool Enabled {
@@ -111,6 +122,19 @@ namespace GTA {
 			}
 			void set(float value) {
 				pIntensity = value;
+			}
+		}
+
+		/// <summary>
+		/// Whether this light casts real shadows. Off by default, which keeps the plain
+		/// DRAW_LIGHT_WITH_RANGE behaviour this class has always had.
+		/// </summary>
+		property bool CastShadows {
+			bool get() {
+				return bCastShadows;
+			}
+			void set(bool value) {
+				bCastShadows = value;
 			}
 		}
 

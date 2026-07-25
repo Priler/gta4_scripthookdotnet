@@ -431,19 +431,25 @@ namespace GTA {
 
 
 	// DELETABLES
+	// Everything in DeleteCache was created by a script, so it all wants deleting when that script goes away
 	void ContentCache::DeleteStuff() {
-#ifndef DEBUG
-		try {
-#endif
+		for (int i = DeleteCache->Count-1; i >= 0; i--) {
+			try {
+				base::iDeletable^ item = DeleteCache[i];
+				if isNULL(item) continue;
 
-			for (int i = DeleteCache->Count-1; i >= 0; i--) {
-				DeleteCache[i]->Delete();
-			}
-			DeleteCache->Clear();
+				// Everything that ends up in here derives from base::Object, but check rather
+				// than assume, because failing the cast must not cost us the whole loop
+				base::Object^ obj = dynamic_cast<base::Object^>(item);
 
-#ifndef DEBUG
-		} catch(...){}
-#endif
+				// PeekExists() rather than Exists() for the same reason the sweep uses it
+				if (isNotNULL(obj) && (!obj->PeekExists())) continue;
+
+				item->Delete();
+
+			} catch(...) {}
+		}
+		DeleteCache->Clear();
 	}
 
 }

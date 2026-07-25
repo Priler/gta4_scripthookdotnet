@@ -162,6 +162,40 @@ namespace GTA{
 		Scripting::DrawLightWithRange(Position.X, Position.Y, Position.Z, Color.R, Color.G, Color.B, Range, Intensity);
 	}
 
+	bool World::SceneLightsAvailable::get() {
+		return unmanaged::MemoryAccess::hasSceneLights();
+	}
+
+	void World::AddSceneLight(Vector3 Position, Drawing::Color Color, float Range, float Intensity, bool CastShadows, unsigned int ID) {
+		// Straight down / world up
+		// These are the directions a point light is built with
+		AddSceneLight( Position, Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 1.0f, 0.0f),
+			Color, Range, Intensity,
+			0, CastShadows ? 0x504 : 0x500,
+			0, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0,
+			CastShadows ? ID : 0 );
+	}
+
+	void World::AddSceneLight(Vector3 Position, Vector3 Direction, Vector3 TangentDirection,
+		Drawing::Color Color, float Range, float Intensity,
+		unsigned int LightType, unsigned int Flags,
+		int TextureHash, int TxdSlot,
+		float InnerConeAngle, float OuterConeAngle,
+		float VolumeIntensity, float VolumeSizeScale,
+		int InteriorID, unsigned int ID)
+	{
+		// The engine wants the colour as three 0..1 floats
+		unmanaged::MemoryAccess::AddSceneLight(
+			LightType, Flags,
+			Direction.X, Direction.Y, Direction.Z,
+			TangentDirection.X, TangentDirection.Y, TangentDirection.Z,
+			Position.X, Position.Y, Position.Z,
+			Color.R / 256.0f, Color.G / 256.0f, Color.B / 256.0f,
+			Intensity, TextureHash, TxdSlot, Range,
+			InnerConeAngle, OuterConeAngle, VolumeIntensity, VolumeSizeScale,
+			InteriorID, ID );
+	}
+
 	array<int>^ World::GetValidPedHandles(GTA::Model Model) {
 		if (!NetHook::isPrimary) {
 			System::Object^ res = NetHook::RaiseEventInLocalScriptDomain(RemoteEvent::GetValidPedHandles, Model);
