@@ -55,9 +55,8 @@ namespace GTA{
 		void SetHandle(int Handle);
 		virtual bool InternalCheckExists() override;
 
-#ifdef DEBUG
+	// Public like Blip's
 	public:
-#endif
 
 		property int MemoryAddress {
 			virtual int get() = base::iAddressableObject::MemoryAddress::get ;

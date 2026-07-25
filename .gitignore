@@ -368,3 +368,7 @@ ASALocalRun/
 # Vendored build inputs
 !ScriptHookDotNet/dxsdk/**
 !ScriptHookDotNet/ScriptHook.lib
+
+# release archive
+_release/archive
+tools/

@@ -45,6 +45,10 @@ namespace unmanaged {
 		// CShadows::AddSceneLight
 		// @TODO: Left at 0 on every version whose address has not been verified against a real exe - callers must check hasSceneLights() first
 		static u32 ADDRESS_ADDSCENELIGHT = 0;
+
+		// Offset for Ped.get_RelationshipGroup
+		static u32 OFFSET_PED_RELATIONSHIPGROUP = 0xBB4;
+
 		//static u32 ADDRESS_GETDIRECT3DDEVICE9 = 0; //GetDirect3DDevice9
 		//static u32 ADDRESS_GLOBALLIST = 0;
 		//static u32 ADDRESS_PHONENUMBER = 0;
@@ -58,6 +62,8 @@ namespace unmanaged {
 		// funcs: GET_CAR_HEALTH, GET_CHAR_HEALTH, SET_OBJECT_VISIBLE, GET_BLIP_COLOUR
 
 		static void Init(u32 BaseAddress, GTA::GameVersion Version) {
+			OFFSET_PED_RELATIONSHIPGROUP = 0xBB4;
+
 			switch (Version) {
 				case GTA::GameVersion::v1000:
 					ADDRESS_BLIPLIST			= BaseAddress + 0;
@@ -158,6 +164,9 @@ namespace unmanaged {
 					// The equivalents for 1.0.7.0 (0x4C59F0) and 1.0.8.0 (0x62DF00) are known
 					// from IV-SDK .NET but have not been checked (@TODO).
 					ADDRESS_ADDSCENELIGHT		= BaseAddress + 0xABCCD0;
+
+					// CPed shrank by 0x10 ahead of this field on Complete Edition
+					OFFSET_PED_RELATIONSHIPGROUP = 0xBA4;
 					break;
 			}
 		}
@@ -197,6 +206,10 @@ namespace unmanaged {
 		static int GetAddressOfItemInPool(int PoolAddress, int Handle);
 		static int GetAddressOfItemInPoolByIndex(int PoolAddress, int Index);
 		static array<int>^ GetListOfHandlesInPool(int PoolAddress);
+
+		static u32 GetPedRelationshipGroupOffset() {
+			return OFFSET_PED_RELATIONSHIPGROUP;
+		}
 
 		static int GetAddressOfPed(int Handle);
 		static int GetAddressOfVehicle(int Handle);

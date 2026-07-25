@@ -529,7 +529,7 @@ namespace GTA{
 		//Scripting::ePedType t;
 		//Scripting::GetPedType(pHandle,&t);
 		//return (GTA::RelationshipGroup)t;
-		return (GTA::RelationshipGroup) *(int*)(MemoryAddress+0xBB4);
+		return (GTA::RelationshipGroup) *(int*)(MemoryAddress + unmanaged::MemoryAccess::GetPedRelationshipGroupOffset());
 	}
 	void Ped::RelationshipGroup::set(GTA::RelationshipGroup group) {
 		NON_EXISTING_CHECK();
