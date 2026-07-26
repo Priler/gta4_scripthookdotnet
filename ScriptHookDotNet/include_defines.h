@@ -213,9 +213,12 @@ namespace unmanaged {
 #endif
 
 
+// Reinterprets the bits of one value as another type
 template <typename R, typename T>
 inline R force_cast(T value) {
-	return *reinterpret_cast<R*>(&value);
+	R result = R();
+	memcpy(&result, &value, sizeof(R) < sizeof(T) ? sizeof(R) : sizeof(T));
+	return result;
 }
 
 typedef unsigned char u8;

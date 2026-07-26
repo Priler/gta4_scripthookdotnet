@@ -69,6 +69,7 @@ namespace GTA{
 		static void NoteDeadHandle(int Handle);
 		static void PruneMetaData();
 		static void PurgeDeadHandles();
+		static bool isHandleInUse(int Handle);
 
 		static void DeleteStuff();
 

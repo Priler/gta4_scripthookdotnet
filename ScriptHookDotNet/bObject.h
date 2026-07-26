@@ -67,14 +67,7 @@ namespace base {
 		/// does NOT latch bExists and does NOT raise CeasedToExist, so polling it cannot
 		/// affect objects that scripts are holding on to.
 		/// </summary>
-		bool PeekExists() {
-			if (!bExists) return false;
-			try {
-				return InternalCheckExists();
-			} catch (...) {
-				return false;
-			}
-		}
+		bool PeekExists();
 
 		//bool ThrowExistError();
 

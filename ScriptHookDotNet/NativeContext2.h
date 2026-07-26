@@ -133,7 +133,8 @@ public:
 	}
 
 
-	static void Invoke(ch* name, NativeContext2* cxt);
+	// false = the name is not in this build's native table and the call was skipped
+	static bool Invoke(ch* name, NativeContext2* cxt);
 
 
 	u8* GetResult();

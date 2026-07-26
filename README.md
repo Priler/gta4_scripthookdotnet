@@ -1,53 +1,25 @@
-# GTAIV .Net Script Hook
+# GTAIV .Net Script Hook </> Fork by Priler
 
-by Hazard (hazard_x@gmx.net / twitter.com/HazardX)
+This is a forked version of ScriptHookDotNet by HazardX, which involves some of the code fixes by Tomasak (rain bug fix and support for CE).  
+Rain bug specifically was rewritten and on top of that, it also fixes known memory leaks and other minor issues (such as fixing offsets for Ped.get_RelationshipGroup, etc).  
+Packed with aCompleteEditionHook.asi by LMS.
 
-fork by Priler (with some edits taken from Tomasak's fork)
-
-based on and includes parts of the GTAIV C++ Script Hook
-from Aru <oneforaru at gmail dot com>
-
-Classes Vector2, Vector3, Vector4, Quaternion and Matrix based on
-sourcecode from SlimDX (https://github.com/SlimDX/slimdx)
+Since IV-SDK-DotNet and other projects doesn't properly support CE, and older versions of SHDN contains issues, I've decided to try and make my own fork while also fixing some of the infamous bugs.  
+Along the way I'll extend this fork with new offsets built-in, as well as tools to easily find them in future when GTA IV CE will be updated.
 
 
-**Description**
-
-This archive contains the complete C++/CLI sourcecode of the 
-GTAIV .Net Script Hook. The compiled ASI plugin allows you to 
-run in-game GTAIV scripts written in any .Net language. 
-The goal of this project is to provide a .Net-typical and easy 
-to use class structure that wraps all scripting functionality 
-of the game.
-Scripts can be developed directly with Visual Studio, granting 
-you all it's benefits like code highlighting and IntelliSense.
-
-WARNING: The code is messy as hell. It was one of my first 
-larger C++ based projects and many very C++ specific things 
-like file structure and includes are a total DISASTER!
-Potential health risks of trying to understand or restructure 
-the code include, but are not limited to:
-Loss of sanity, brain damage and irreversible nerdism.
-
-
-Special thanks to Aru for his help and for his C++ Script Hook.
-This project wouldn't have been possible without it.
-
-You can get Aru's C++ Script Hook here:
-http://www.gtaforums.com/index.php?showtopic=390582
-
-
-**Supported game versions**
+### **Supported game versions**
 
 - GTA IV: 1.0.1.0 up to 1.0.7.0
 - EFLC: 1.1.1.0 up to 1.1.2.0
-- GTA IV Complete Edition: 1.2.0.59
+- **GTA IV Complete Edition: 1.2.0.59**
 
 Complete Edition additionally requires `aCompleteEditionHook.asi`
-(in `lib/CompleteEditionHook/`.
+(in `lib/CompleteEditionHook/`).  
+This fork of SHDN was made for CE, in the first place.
 
 
-**Building**
+### **Building**
 
 Required to compile the sourcecode:
 
@@ -73,7 +45,20 @@ See the included ScriptHookDotNet.readme.txt on how to actually run
 the Script Hook with the game.
 
 
-**License**
+### **Credits**
+
+Original repo by Hazard (hazard_x@gmx.net / twitter.com/HazardX)
+Some of the code edits was merged from Tomasak's fork.
+Some things was inspired by ideas behind IV-SDK-DotNet project by ClonkAndre.
+
+Based on and includes parts of the GTAIV C++ Script Hook
+from Aru <oneforaru at gmail dot com>
+
+Classes Vector2, Vector3, Vector4, Quaternion and Matrix based on
+sourcecode from SlimDX (https://github.com/SlimDX/slimdx)
+
+
+### **License**
 
 The GTAIV .Net Script Hook sourcecode is published unter the MIT license. 
 See LICENSE.txt for the complete license text.

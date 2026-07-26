@@ -41,6 +41,29 @@
 namespace GTA {
 namespace Native{
 
+	///
+	// Bit-exact float <-> int conversion.
+	///
+	[System::Runtime::InteropServices::StructLayout(System::Runtime::InteropServices::LayoutKind::Explicit)]
+	private value struct FloatBits {
+		[System::Runtime::InteropServices::FieldOffset(0)] int AsInt;
+		[System::Runtime::InteropServices::FieldOffset(0)] float AsFloat;
+	};
+
+	static int FloatToBits(float value) {
+		FloatBits u;
+		u.AsInt = 0;
+		u.AsFloat = value;
+		return u.AsInt;
+	}
+
+	static float BitsToFloat(int value) {
+		FloatBits u;
+		u.AsFloat = 0.0f;
+		u.AsInt = value;
+		return u.AsFloat;
+	}
+
 	// CLASS PARAMETER
 
 	//protected:
@@ -211,7 +234,7 @@ namespace Native{
 			pType = vtype::var_int;
 		}
 		void Parameter::SetValue(float value) {
-			pData = force_cast<int>(value); //*reinterpret_cast<int*>(&value);
+			pData = FloatToBits(value); // NOT force_cast - see FloatBits above
 			pType = vtype::var_float;
 		}
 		void Parameter::SetValue(bool value) {
@@ -334,13 +357,11 @@ namespace Native{
 		}
 
 		System::Object^ Parameter::Value::get() {
-				int val;
 				switch (pType) {
 					case vtype::var_int:
 						return pData;
 					case vtype::var_float:
-						val = pData;
-						return *reinterpret_cast<float*>(&val);
+						return BitsToFloat(pData); // NOT a reinterpret_cast - see FloatBits above
 					case vtype::var_bool:
 						return (pData!=0);
 					case vtype::var_string:

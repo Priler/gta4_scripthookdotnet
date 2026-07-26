@@ -25,6 +25,7 @@
 #include "nFunction.h"
 
 #include "NativeContext2.h"
+#include "NetHook.h"
 #include "RemoteScriptDomain.h"
 #include "nParameter.h"
 #include "nTemplate.h"
@@ -34,10 +35,20 @@
 namespace GTA {
 namespace Native {
 
+	void Function::ReportUnresolvedNative(String^ Name) {
+		try {
+			if (isNULL(reportedMissingNatives)) return;
+			if (!reportedMissingNatives->Add(Name)) return; // already said so
+			NetHook::Log("Native '" + Name + "' is not in this game version's native table - "
+				+ "the call was skipped and returned 0.");
+		} catch (...) {}
+	}
+
 	static Function::Function(){
 		cxt = new Scripting::NativeContext2;
 		cxt3 = new unmanaged::NativeContext3;
 		stringsToUnpin = gcnew List<IntPtr>();
+		reportedMissingNatives = gcnew System::Collections::Generic::HashSet<String^>();
 	}
 
 	Function::~Function() {
@@ -70,7 +81,7 @@ namespace Native {
 			for (int i = 0; i < Arguments->Length; i++){
 				Arguments[i]->Push(cxt);
 			}
-			Scripting::NativeContext2::Invoke(GetStringPointer(Name),cxt);
+			if (!Scripting::NativeContext2::Invoke(GetStringPointer(Name),cxt)) ReportUnresolvedNative(Name);
 
 			for (int i = 0; i < Arguments->Length; i++){
 				Arguments[i]->AfterExec(cxt);
@@ -155,7 +166,7 @@ namespace Native {
 		bool bFail = false;
       char* stringPointer = (char*)Marshal::StringToHGlobalAnsi(name).ToPointer();
 		try {
-			Scripting::NativeContext2::Invoke(stringPointer, cxt);
+			if (!Scripting::NativeContext2::Invoke(stringPointer, cxt)) ReportUnresolvedNative(name);
 		} catch (...) {
 			bFail = true;
 		} finally {

@@ -79,15 +79,15 @@ namespace GTA {
 	generic <class T> where T: base::Object
 	void ContentCache::RemoveNonExisting(List<T>^ list) {
 		if (list->Count == 0) return;
-		array<T>^ snapshot = list->ToArray();
-		for (int i = 0; i < snapshot->Length; i++) {
-			T item = snapshot[i];
+		// Walk backwards so removing an element cannot shift the ones still to be visited, and remove BY INDEX
+		for (int i = list->Count-1; i >= 0; i--) {
+			T item = list[i];
 			if (isNULL(item)) continue;
 			if (item->PeekExists()) continue;
 			// NOTE: read what we need BEFORE removing - the original code logged
 			// list[i] after RemoveAt(i), which read the wrong element or threw
 			VLOG( "Dropping cached " + item->GetType()->Name + " " + item->UID.ToString() + " (gone from game)" );
-			list->Remove(item);
+			list->RemoveAt(i);
 		}
 	}
 	generic <class T> where T: base::Object
@@ -127,9 +127,29 @@ namespace GTA {
 		return System::Int32::TryParse(Key->Substring(0,sep), Handle);
 	}
 
+	// Handles are only unique within one pool, and a metadata key is "handle#name" with no
+	// type tag (see SetMetaData), so handle 42 could belong to a ped AND a vehicle at once
+	bool ContentCache::isHandleInUse(int Handle) {
+		if (PedCache->ContainsKey(Handle)) return true;
+		if (VehicleCache->ContainsKey(Handle)) return true;
+		if (ObjectCache->ContainsKey(Handle)) return true;
+		if (PickupCache->ContainsKey(Handle)) return true;
+		if (GroupCache->ContainsKey(Handle)) return true;
+		if (BlipCache->ContainsKey(Handle)) return true;
+		if (CameraCache->ContainsKey(Handle)) return true;
+		return false;
+	}
+
 	bool ContentCache::isMetaDataExpired(int Handle) {
 		System::DateTime died;
 		if (!DeadHandles->TryGetValue(Handle, died)) return false; // still alive as far as we know
+
+		// Something is cached under this handle again
+		if (isHandleInUse(Handle)) {
+			DeadHandles->Remove(Handle);
+			return false;
+		}
+
 		return ((System::DateTime::Now - died).TotalMilliseconds > METADATA_GRACE_MS);
 	}
 
@@ -438,13 +458,12 @@ namespace GTA {
 				base::iDeletable^ item = DeleteCache[i];
 				if isNULL(item) continue;
 
-				// Everything that ends up in here derives from base::Object, but check rather
-				// than assume, because failing the cast must not cost us the whole loop
-				base::Object^ obj = dynamic_cast<base::Object^>(item);
-
-				// PeekExists() rather than Exists() for the same reason the sweep uses it
-				if (isNotNULL(obj) && (!obj->PeekExists())) continue;
-
+				// Always attempt the delete, exactly as before. An earlier version skipped
+				// items whose PeekExists() was false, but that reads the LATCHED bExists
+				// first: a wrapper latched dead by a transient miss would never be deleted
+				// and the entity would leak in game for the rest of the session.
+				// The per-item try/catch is what makes this safe - one dead entry no longer
+				// abandons every entry after it, which is the actual bug that was here.
 				item->Delete();
 
 			} catch(...) {}

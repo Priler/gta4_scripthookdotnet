@@ -61,7 +61,8 @@ namespace Scripting {
 		memcpy(trg,ptr,len);
 	}
 
-	void NativeContext2::Invoke(ch* name, NativeContext2* cxt)	{
+	// Returns false when the name is not in this build's native table
+	bool NativeContext2::Invoke(ch* name, NativeContext2* cxt)	{
 		//u32 hash = Game::GetInstance()->Hash(name);
 		//ptr fn = Game::GetInstance()->Script_FindNativeAddress(hash);
 		ptr fn = Game::GetNativeAddress(name);
@@ -69,9 +70,11 @@ namespace Scripting {
 		if (fn != 0) {
 			NativeCall call = (NativeCall)fn;
 			call(cxt);
-		} else {
-			cxt->ClearResult();
+			return true;
 		}
+
+		cxt->ClearResult();
+		return false;
 	}
 
 	u8* NativeContext2::GetResult() {

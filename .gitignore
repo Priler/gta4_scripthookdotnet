@@ -372,3 +372,6 @@ ASALocalRun/
 # release archive
 _release/archive
 tools/
+
+# bruh
+.vscode/

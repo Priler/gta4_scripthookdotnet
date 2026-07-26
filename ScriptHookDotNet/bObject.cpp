@@ -46,6 +46,23 @@ namespace base {
 		return false;
 	}
 
+	bool Object::PeekExists() {
+		if (!bExists) return false;
+
+		int saved = pLastExistsCheck;
+		pLastExistsCheck = RemoteScriptDomain::FrameNum;
+
+		bool res;
+		try {
+			res = InternalCheckExists();
+		} catch (...) {
+			res = false;
+		}
+
+		pLastExistsCheck = saved;
+		return res;
+	}
+
 	//bool Object::ThrowExistError() {
 	//	if (Exists()) return false;
 	//	#ifdef DEBUG

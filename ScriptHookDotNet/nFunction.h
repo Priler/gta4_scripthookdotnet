@@ -57,6 +57,10 @@ namespace Native{
 		//static bool bInit = false;
 		static void BaseCall(String^ Name, array<Parameter^>^ Arguments);
 
+		// Names already reported as absent from this build's native table
+		static System::Collections::Generic::HashSet<String^>^ reportedMissingNatives;
+		static void ReportUnresolvedNative(String^ Name);
+
 	internal:
 
 		static unmanaged::NativeContext3* cxt3; // = new NativeContext3;

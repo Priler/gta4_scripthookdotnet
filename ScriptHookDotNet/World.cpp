@@ -190,7 +190,7 @@ namespace GTA{
 			Direction.X, Direction.Y, Direction.Z,
 			TangentDirection.X, TangentDirection.Y, TangentDirection.Z,
 			Position.X, Position.Y, Position.Z,
-			Color.R / 256.0f, Color.G / 256.0f, Color.B / 256.0f,
+			Color.R / 255.0f, Color.G / 255.0f, Color.B / 255.0f,
 			Intensity, TextureHash, TxdSlot, Range,
 			InnerConeAngle, OuterConeAngle, VolumeIntensity, VolumeSizeScale,
 			InteriorID, ID );
@@ -595,9 +595,9 @@ namespace GTA{
 	}
 
 	Vehicle^ World::CreateVehicle(Vector3 Position) {
-		int car;
+		int car = 0;
 		u32 model = 0;
-		Scripting::ScriptAny unknown;
+		Scripting::ScriptAny unknown = 0;
 		Scripting::GetRandomCarModelInMemory(true,&model,&unknown);
 		unmanaged::Native::CreateCar(model,Position.X,Position.Y,Position.Z,&car,true);
 		if (car == 0) return nullptr;
