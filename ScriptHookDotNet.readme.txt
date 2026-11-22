@@ -1,4 +1,4 @@
-GTAIV .Net Script Hook v1.7.1.9 BETA
+GTAIV .Net Script Hook v1.7.2.0 BETA
 (C) 2009 Hazard (hazard_x@gmx.net / twitter.com/HazardX)
 
 based on the GTAIV C++ Script Hook from Aru <oneforaru at gmail dot com>
@@ -170,6 +170,25 @@ game when ScriptHookDotNet.asi is deleted.
 
 8. Changelog
 ------------
+
+Version 1.7.2.0 BETA: (Priler's fork)
+- Added World.MillisecondsPerGameMinute and World.GameClockRateAvailable
+  to change how fast the game clock runs (2000 by default, 60000 for
+  real time). Complete Edition only for now. (loading a save resets it to 2000)
+- Added World.AddSceneLight, World.SceneLightsAvailable and
+  Light.CastShadows: lights drawn through the game's own scene light
+  system, which can cast real shadows. Complete Edition only for now (untested)
+- Ped.MemoryAddress is now available to scripts (was debug builds only)
+- Fixed List<Ped>.Contains, IndexOf and Remove, Dictionary and HashSet
+  keys, and LINQ treating the same ped, vehicle or object as two
+  different ones. Equality now goes by handle and type, as == already did
+- Fixed script-created entities, mostly vehicles, sometimes being
+  reported as no longer existing while they were still in the game
+- Fixed Ped.RelationshipGroup returning garbage on Complete Edition
+- Fixed Blip.Name crashing the game. The native behind it does not
+  exist in the game, so it now returns an empty string
+- Fixed a memory leak: the internal object cache now forgets entities
+  that are gone from the game, and their Metadata expires after a while
 
 Version 1.7.1.9 BETA: (Priler's fork)
 - Reworked the rain fix a bit. 1.7.1.8 by Tomasak removed the Direct3D state setup
