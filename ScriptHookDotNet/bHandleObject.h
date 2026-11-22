@@ -115,12 +115,22 @@ namespace base {
 		[System::ComponentModel::EditorBrowsableAttribute(EditorBrowsableState::Never)]
 		void SetMetadata(System::String^ ValueName, bool Global, T Value);
 
+		// Equality is by handle AND concrete type. Handles are only unique within one pool, so a
+		// Ped and a Vehicle can share a handle number without being the same thing
+		virtual bool Equals(System::Object^ obj) override {
+			if (Object::ReferenceEquals(obj,nullptr)) return false;
+			if (Object::ReferenceEquals(obj,this)) return true;
+			if (obj->GetType() != GetType()) return false;
+			return (pHandle == safe_cast<HandleObject^>(obj)->pHandle);
+		}
 		virtual bool Equals(base::HandleObject^ obj) {
 			if (Object::ReferenceEquals(obj,nullptr)) return false;
+			if (obj->GetType() != GetType()) return false;
 			return (pHandle == obj->Handle);
 		}
 		virtual bool Equals(base::iHandleObject^ obj) {
 			if (Object::ReferenceEquals(obj,nullptr)) return false;
+			if (obj->GetType() != GetType()) return false;
 			return (pHandle == obj->Handle);
 		}
 		static bool operator == ( HandleObject^ left, HandleObject^ right ) {
