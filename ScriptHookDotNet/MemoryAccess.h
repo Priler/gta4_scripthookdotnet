@@ -45,6 +45,9 @@ namespace unmanaged {
 		// CShadows::AddSceneLight
 		// @TODO: Left at 0 on every version whose address has not been verified against a real exe - callers must check hasSceneLights() first
 		static u32 ADDRESS_ADDSCENELIGHT = 0;
+		// CClock::ms_nMillisecondsPerGameMinute (u32, game default 2000)
+		// @TODO: Left at 0 on every version whose address has not been verified against a real exe - callers must check hasGameClockRate() first
+		static u32 ADDRESS_CLOCK_MSPERGAMEMINUTE = 0;
 
 		// Offset for Ped.get_RelationshipGroup
 		static u32 OFFSET_PED_RELATIONSHIPGROUP = 0xBB4;
@@ -165,6 +168,17 @@ namespace unmanaged {
 					// from IV-SDK .NET but have not been checked (@TODO).
 					ADDRESS_ADDSCENELIGHT		= BaseAddress + 0xABCCD0;
 
+					// CClock::ms_nMillisecondsPerGameMinute. 12059.ini entry 0x5CB787 decodes
+					// to `mov edi,[0x1295830]` inside CClock::Update (VA 0x9CB785), the loop
+					// `while (now - lastTick > msPerMin) { minute++; lastTick += msPerMin; }`.
+					// Reset to 2000 by CClock::Initialise (0x9CB3F4), whose only caller is the
+					// session init at 0x5C0DD0 (`push 0x7D0`) - so every new game / save load.
+					// Also written by a block restore at 0x8C88D0 (purpose unconfirmed).
+					// 
+					//1.0.7.0 = 0xDD5304 and 1.0.8.0 = 0xD51698
+					// per IV-SDK .NET, both unverified (@TODO)
+					ADDRESS_CLOCK_MSPERGAMEMINUTE = BaseAddress + 0x1295830;
+
 					// CPed shrank by 0x10 ahead of this field on Complete Edition
 					OFFSET_PED_RELATIONSHIPGROUP = 0xBA4;
 					break;
@@ -191,6 +205,16 @@ namespace unmanaged {
 			float InnerConeAngle, float OuterConeAngle,
 			float VolIntensity, float VolSizeScale,
 			int InteriorId, u32 ID);
+
+		/// <summary>
+		/// Whether this game version has a known CClock::ms_nMillisecondsPerGameMinute address.
+		/// </summary>
+		static bool hasGameClockRate() {
+			return (ADDRESS_CLOCK_MSPERGAMEMINUTE != 0);
+		}
+
+		static int GetMillisecondsPerGameMinute();
+		static void SetMillisecondsPerGameMinute(int Value);
 
 		static int GetGlobalAddress(int index);
 		static int GetGlobalInteger(int index);

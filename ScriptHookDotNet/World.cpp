@@ -166,6 +166,17 @@ namespace GTA{
 		return unmanaged::MemoryAccess::hasSceneLights();
 	}
 
+	bool World::GameClockRateAvailable::get() {
+		return unmanaged::MemoryAccess::hasGameClockRate();
+	}
+
+	int World::MillisecondsPerGameMinute::get() {
+		return unmanaged::MemoryAccess::GetMillisecondsPerGameMinute();
+	}
+	void World::MillisecondsPerGameMinute::set(int value) {
+		unmanaged::MemoryAccess::SetMillisecondsPerGameMinute(value);
+	}
+
 	void World::AddSceneLight(Vector3 Position, Drawing::Color Color, float Range, float Intensity, bool CastShadows, unsigned int ID) {
 		// Straight down / world up
 		// These are the directions a point light is built with

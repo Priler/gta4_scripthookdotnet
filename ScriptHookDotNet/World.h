@@ -51,6 +51,8 @@ namespace GTA{
 		/// <param name="Intensity">Light Intensity. 50 is a common value.</param>
 		static void DrawLight(Vector3 Position, Drawing::Color Color, float Range, float Intensity);
 
+	public:
+
 		/// <summary>
 		/// Whether AddSceneLight is usable on the game version currently running.
 		/// Only Complete Edition (1.2.0.59) is currently supported
@@ -88,6 +90,30 @@ namespace GTA{
 			float InnerConeAngle, float OuterConeAngle,
 			float VolumeIntensity, float VolumeSizeScale,
 			int InteriorID, unsigned int ID);
+
+		/// <summary>
+		/// Whether MillisecondsPerGameMinute can be read and changed on the game version currently running.
+		/// Only Complete Edition (1.2.0.59) is currently supported
+		/// </summary>
+		static property bool GameClockRateAvailable {
+			bool get();
+		}
+
+		/// <summary>
+		/// How many real milliseconds one in-game minute lasts. The game default is 2000
+		/// (one in-game day = 48 real minutes). 60000 makes the game clock run at real time.
+		/// <para>Values below 1 are clamped to 1. When GameClockRateAvailable is false, the getter
+		/// returns 2000 and the setter does nothing.</para>
+		/// <para>The game resets it to 2000 whenever a session starts (new game or loading a save),
+		/// so a script that wants a different rate must re-apply it. Reading it is a plain memory
+		/// read, so checking it every tick and setting it again when it differs is cheap.</para>
+		/// </summary>
+		static property int MillisecondsPerGameMinute {
+			int get();
+			void set(int value);
+		}
+
+	internal:
 
 		static array<int>^ World::GetValidPedHandles(GTA::Model Model);
 		static array<int>^ World::GetValidVehicleHandles(GTA::Model Model);

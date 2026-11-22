@@ -66,6 +66,26 @@ namespace unmanaged {
 		} catchErrors ("Error in AddSceneLight", )
 	}
 
+	// Default the game initialises the clock with: 1 game minute = 2 real seconds
+	#define DEFAULT_MS_PER_GAME_MINUTE 2000
+
+	int MemoryAccess::GetMillisecondsPerGameMinute() {
+		if (ADDRESS_CLOCK_MSPERGAMEMINUTE == 0) return DEFAULT_MS_PER_GAME_MINUTE;
+		try {
+			return *reinterpret_cast<volatile int*>(ADDRESS_CLOCK_MSPERGAMEMINUTE);
+		} catchErrors ("Error in GetMillisecondsPerGameMinute", return DEFAULT_MS_PER_GAME_MINUTE; )
+	}
+
+	void MemoryAccess::SetMillisecondsPerGameMinute(int Value) {
+		if (ADDRESS_CLOCK_MSPERGAMEMINUTE == 0) return;
+		// CClock::Update loops `while (now - lastTick > msPerMin) lastTick += msPerMin` with a
+		// SIGNED compare, so 0 or anything negative never terminates and hangs the game
+		if (Value < 1) Value = 1;
+		try {
+			*reinterpret_cast<volatile int*>(ADDRESS_CLOCK_MSPERGAMEMINUTE) = Value;
+		} catchErrors ("Error in SetMillisecondsPerGameMinute", )
+	}
+
 	int MemoryAccess::GetGlobalAddress(int index) {
 		int res;
 		try {
